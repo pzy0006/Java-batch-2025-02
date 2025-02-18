@@ -82,8 +82,8 @@ import sun.net.util.IPAddressUtil;
  *
  * exception:
  * checked exception and unchecked exception
- * checked: it happens in complie time. throws, throw
- * unchecked expcetion: it happens in runtime, you can use try catch finally block
+ * checked: it happens in compile time. throws, throw you can use try catch finally block
+ * unchecked exception: it happens in runtime,
  *
  * final vs finally vs finalize
  *
@@ -95,7 +95,9 @@ import sun.net.util.IPAddressUtil;
  *   non-static members belongs to an object and can not be accessed within static class/ method.
  *
  *
- *
+ *error vs exception:
+ * error is "bad" things that  is unrecoverable
+ * exception is some thing you can recover from it.
  *
  *
  *
