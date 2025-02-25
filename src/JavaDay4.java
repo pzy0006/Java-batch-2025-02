@@ -1,3 +1,6 @@
+import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * JVM: stands for java virtual machine
  *
@@ -115,10 +118,98 @@
  * timed waiting : a thread is waiting with a specified time for another threads
  * terminated: task is finished.
  *
+ *
+ * wait() vs sleep()
+ * wait function will let current thread to wait and give up its hold on a shared rescourses
+ * sleep function does not release shared resources
+ *
+ *
+ * 1 13:46:09Thread-0 enter into test() function, and sleep for 1s
+ * 2 13:46:10Thread-0 wake up now, and I will call wait() function for 2s
+ * 3 13:46:10Thread-1 enter into test() function, and sleep for 1s
+ * 4 13:46:11Thread-1 wake up now, and I will call wait() function for 2s
+ * 5 13:46:12Thread-0 I am leaving now, but I need to sleep 10s
+ * 6 13:46:22Thread-0 leave
+ * 7 13:46:22Thread-1 I am leaving now, but I need to sleep 10s
+ * 8 13:46:32Thread-1 leave
+ *
+ * run() vs start()
+ * run(): will not create a new thread to execute your code -> will use main thread
+ * start(): will create a new thread to execute your code -> main thread is not used
+ *
+ * run(): you can call run() with same thread many times, start()-> you only can call one time with same thread
+ *
+ * run() method: the code you defined will be executed immediately when you call run() function
+ * start(): this method will need to wait cpu resources. which means your thread will need time to wait cpu resources
+ *
+ *
+ *
+ * volatile:
+ * 1: make shared resources visible to other thread(s)
+ * 2: prevent to reodering
+ *
+ *
+ * [thread A]                                                       [thread B]
+ *     |                                                                 |
+ * [local memory A: shared resources replic]           [local memory B:shared resources replic]
+ *          | ------------------------------JMM----------------------------|
+ *          |                                                               |
+ *     [                     main memory: shared resources                                  ]
+ *
+ * suppose you have .java file like this
+ * int a = 10;
+ * int b =  11;
+ * int c = 12;
+ *  int d = a + b;
+ *  int e = c + d;
+ *  after you compile you code in you .class file
+ *
+ *  * int c = 12;
+ *  * int b =  11;
+ *   * int a = 10;
+ *  *  int d = a + b;
+ *  *  int e = c + d;
+ *
+ *
+ * after you adding volatile
+ * * volatile int a = 10;
+ *  * volatile int b =  11;
+ *  * volatile int c = 12;
+ *   volatile int d = a + b;
+ *  *  volatile int e = c + d;
+ *
+ *
+ *
+ *
+ *
  */
 public class JavaDay4 {
-    public static void main(String[] args) {
-        System.out.println("hello world");
+    private AtomicInteger count = new AtomicInteger();
+    public static void main(String[] args) {// main  thread
 
+
+        JavaDay4 javaDay4 = new JavaDay4();
+        new Thread(javaDay4::test).start();//thread 0
+        new Thread(javaDay4::test).start();// thread 1
+
+    }
+    private synchronized  void test(){
+        try{
+            log("enter into test() function, and sleep for 1s");
+            Thread.sleep(1000);
+
+            log("wake up now, and I will call wait() function for 2s");
+            wait(2000);
+            log("I am leaving now, but I need to sleep 10s");
+            Thread.sleep(10000);
+            log("leave");
+            notify();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    private void log(String str){
+        System.out.println( count.incrementAndGet() + " " + new Date().toString().split(" ")[3] +
+                Thread.currentThread().getName() + " " + str);
     }
 }
